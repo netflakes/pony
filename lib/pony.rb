@@ -121,7 +121,7 @@ module Pony
 #   Pony.mail(:to => 'you@example.com', :from => 'me@example.com', :subject => 'hi', :body => 'Hello there.')
 #   Pony.mail(:to => 'you@example.com', :html_body => '<h1>Hello there!</h1>', :body => "In case you can't read html, Hello there.")
 #   Pony.mail(:to => 'you@example.com', :cc => 'him@example.com', :from => 'me@example.com', :subject => 'hi', :body => 'Howsit!')
-	def self.mail(options)
+	def self.create_mail(options)
 		options = @@options.merge options
 		raise(ArgumentError, ":to is required") unless options[:to]
 
@@ -135,7 +135,12 @@ module Pony
 			options[:via_options][:location] ||= sendmail_binary
 		end
 
-		deliver build_mail(options)
+                # - just return the mail object for sending later
+		build_mail(options)
+	end
+
+	def self.send_mail
+		self.deliver!
 	end
 
 	private
@@ -160,10 +165,6 @@ module Pony
 		end
 
 		return options
-	end
-
-	def self.deliver(mail)
-		mail.deliver!
 	end
 
 	def self.default_delivery_method
